@@ -13,5 +13,7 @@ TARGETS = $(EVENT)/output/badges.pdf $(EVENT)/output/mesas.pdf $(EVENT)/output/e
 	$(EVENT)/output/certificados.pdf $(EVENT)/output/premios.pdf $(EVENT)/output/etiquetas.pdf \
 	$(EVENT)/output/enunciados.pdf
 
-$(EVENT)/output/%.pdf: $(EVENT)/%.typ $(EVENT)/comum.typ $(EVENT)/certificado.typ $(EVENT)/conteudo.yaml $(EVENT)/input/pessoas.csv $(EVENT)/input/equipas.csv $(wildcard $(EVENT)/background/*.pdf) | $(EVENT)/output
-	typst compile --font-path "$(EVENT)/fonts" $< $@
+# Rebuilt when anything the template read changes (CSVs, conteudo.yaml, shared .typ, images): see typst_deps in the Makefile
+$(EVENT)/output/%.pdf: $(EVENT)/%.typ $(EVENT)/event.mk | $(EVENT)/output $(EVENT)/.deps
+	typst compile --font-path "$(EVENT)/fonts" $(call typst_deps,$@) $< $@
+	$(call save_deps,$@)
