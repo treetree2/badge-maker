@@ -1,5 +1,5 @@
 // Labels for the small envelopes with each team's starting problems, left on the team's table: the spot
-// (row × column) in large type with a mini map of the room, the room and category in the category's colour (as on
+// (row × column) in large type with a mini map of the room, the room and jury table in the table's colour (as on
 // equipas.pdf), and the team's code and school to check against the team sheet. Same order as equipas.pdf: by room, row and column,
 // each room starting on a new sheet so it can go to the people distributing there.
 // Label sheet in conteudo.yaml (etiquetas_enunciados); default Avery L7160, 21 per A4.
@@ -33,13 +33,13 @@
 }
 
 #let label(t) = {
-  let c = cfg.categorias.at(t.categoria)
-  let color = rgb(c.cor)
+  let color = table_color(t)
+  let ink = table_text(t)
   set text(top-edge: "cap-height", bottom-edge: "baseline")
   place(top + left, rect(width: 100%, height: 7.5mm, fill: color, stroke: none, inset: (x: 4mm, y: 0mm), align(horizon, grid(
     columns: (1fr, auto),
-    text(size: 9pt, weight: "extrabold", tracking: 0.06em, fill: white, upper(cfg.locais.at(t.local))),
-    text(size: 7pt, weight: "bold", tracking: 0.14em, fill: white, upper(c.titulo)),
+    text(size: 9pt, weight: "extrabold", tracking: 0.06em, fill: ink, upper(cfg.locais.at(t.local))),
+    text(size: 9pt, weight: "extrabold", tracking: 0.1em, fill: ink)[MESA #t.mesa],
   ))))
   // Spot on the left, mini map on the right, team code and school below
   place(top + left, dx: 4mm, dy: 11.5mm, box(width: 31mm, align(center,

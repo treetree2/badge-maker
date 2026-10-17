@@ -38,29 +38,30 @@
 // "a, b e c"
 #let and_list(items) = if items.len() < 2 { items.join() } else { items.slice(0, -1).join(", ") + " e " + items.last() }
 
-// One A4 landscape certificate; body is centred between the lockup and the signatures
+// One A4 landscape certificate: body centred between the lockup and a little above the signatures, which sit as low
+// as they go, just above the logo strip, leaving room to sign
 #let certificate(accent: blue, ink: white, body) = page(paper: "a4", flipped: true, margin: 0pt, {
   set text(font: "Poppins", fill: navy, lang: "pt")
   set par(spacing: 0pt)
   place(rect(width: 100%, height: 100%, fill: rgb("#fbfcfe"), stroke: none))
   place(rect(width: 100%, height: 100%, fill: paper, stroke: none))
   // White strips under the lockup and the logos, so the graph paper doesn't run through them
-  place(top + left, dy: 16mm, rect(width: 100%, height: 36mm, fill: white, stroke: (bottom: 0.3mm + rgb("#d7e0ec"))))
+  place(top + left, dy: 16mm, rect(width: 100%, height: 26mm, fill: white, stroke: (bottom: 0.3mm + rgb("#d7e0ec"))))
   place(top + left, dy: 179mm, rect(width: 100%, height: 23mm, fill: white, stroke: (top: 0.3mm + rgb("#d7e0ec"))))
   place(top + left, band(16mm, accent, ink))
   place(bottom + left, band(8mm, accent, ink))
 
-  place(top + left, dx: 24mm, dy: 25mm, image("assets/naboj-physics.svg", height: 21mm))
-  place(top + right, dx: -24mm, dy: 27mm, align(right, {
+  place(top + left, dx: 24mm, dy: 21.5mm, image("assets/naboj-physics.svg", height: 15mm))
+  place(top + right, dx: -24mm, dy: 22.5mm, align(right, {
     set text(top-edge: "cap-height", bottom-edge: "baseline")
-    text(size: 32pt, weight: "extrabold", fill: blue)[13 NOV]
-    v(3.4mm)
+    text(size: 25pt, weight: "extrabold", fill: blue)[13 NOV]
+    v(2.8mm)
     text(size: 9.5pt, weight: "bold", tracking: 0.12em, upper(cert.evento))
   }))
 
-  place(top + left, dy: 54mm, box(width: 100%, height: 104mm, align(center + horizon, box(width: 250mm, body))))
+  place(top + left, dy: 44mm, box(width: 100%, height: 108mm, align(center + horizon, box(width: 250mm, body))))
 
-  place(top + left, dy: 164mm, box(width: 100%, align(center, cert.assinaturas.map(signature).join(h(26mm)))))
+  place(top + left, dy: 168mm, box(width: 100%, align(center, cert.assinaturas.map(signature).join(h(26mm)))))
   // A grid centres each logo vertically (inline images would share a baseline, leaving the wordmark low)
   place(top + left, dy: 183.5mm, box(width: 100%, height: 15mm, align(center + horizon, grid(
     columns: 3, column-gutter: 18mm, align: horizon,
@@ -70,29 +71,28 @@
   ))))
 })
 
-// The parts every certificate shares: kind, "Certifica-se que", the name, then three lines: the sentence up to
-// the school ("… da equipa Júnior do"), the school alone (never split), and the event, when and where
-#let content(kind, name, lead, school, highlight: none) = {
+// The parts every certificate shares: an optional highlight (the place, on premios.pdf), "Certifica-se que", the
+// name, then three lines: the sentence up to the school ("… da equipa Júnior do"), the school alone (never split),
+// and the event, when and where
+#let content(name, lead, school, highlight: none) = {
   set text(top-edge: "cap-height", bottom-edge: "baseline")
-  text(size: 12pt, weight: "bold", tracking: 0.22em, fill: muted, upper(kind))
-  if highlight != none { v(7mm); highlight }
-  v(10mm)
+  if highlight != none { highlight; v(12mm) }
   text(size: 16pt, weight: "medium")[Certifica-se que]
-  v(8mm)
+  v(10mm)
   context {
     let size = calc.min(50pt, 50pt * (230mm / measure(text(size: 50pt, weight: "extrabold", name)).width))
     text(size: size, weight: "extrabold", name)
   }
-  v(10mm)
+  v(13mm)
   block(width: 250mm, {
     set text(size: 16pt, top-edge: "ascender", bottom-edge: "descender")
-    set par(leading: 0.55em, justify: false)
+    set par(leading: 0.8em, justify: false)
     lead
     linebreak()
     box(text(size: 18pt, weight: "bold", school))
   })
-  v(6mm)
-  text(size: 14pt)[no #cert.evento, a #cert.data, no #cert.local.]
+  v(8mm)
+  text(size: 16pt)[no #cert.evento, a #cert.data, no #cert.local.]
 }
 
 // "da Escola …", "do Colégio …"

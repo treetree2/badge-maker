@@ -1,5 +1,6 @@
 // Table papers of Náboj de Física 2026: one A4 sheet per place at a table (everyone in the list with a table),
-// saying the role, the table and the venue; árbitros also get their problems. Sorted by venue, table and role.
+// saying the role, the table and the venue, in the table's colour; árbitros also get their problems. The operador
+// needs no label, so their sheet is the table's sign instead: a giant letter. Sorted by venue, table and role.
 #import "comum.typ": *
 
 #set page(paper: "a4", flipped: true, margin: 0pt)
@@ -23,15 +24,21 @@
 
 #let sheet(p) = {
   let f = cfg.funcoes.at(p.funcao)
-  let color = rgb(f.cor)
+  let color = table_color(p)
   set text(top-edge: "cap-height", bottom-edge: "baseline")
   place(rect(width: 100%, height: 100%, fill: paper, stroke: none))
   place(top + left, rect(width: 100%, height: offset + 18mm, fill: color, stroke: none,
-    pad(x: 20mm, bottom: 7mm, align(bottom, text(size: 11pt, weight: "bold", tracking: 0.16em, fill: rgb(f.texto))[NÁBOJ DE FÍSICA 2026 · 13 NOV]))))
-  place(top + left, dx: 20mm, dy: offset + 32mm, box(width: 257mm, align(center,
-    fit(text(weight: "extrabold", fill: color, upper(f.titulo)), 257mm, 96pt))))
-  place(top + left, dx: 20mm, dy: offset + 70mm, box(width: 257mm, align(center,
-    text(size: 44pt, weight: "bold")[Mesa #p.mesa #text(fill: muted)[·] #cfg.locais.at(p.local)])))
+    pad(x: 20mm, bottom: 7mm, align(bottom, text(size: 11pt, weight: "bold", tracking: 0.16em, fill: table_text(p))[NÁBOJ DE FÍSICA 2026 · 13 NOV]))))
+  let where = text(size: 60pt, weight: "bold")[Mesa #p.mesa #text(fill: muted)[·] #cfg.locais.at(p.local)]
+  if p.funcao == "operador" {
+    place(top + left, dx: 20mm, dy: offset + 28mm, box(width: 257mm, align(center,
+      text(size: 400pt, weight: "extrabold", fill: color, p.mesa))))
+    place(top + left, dx: 20mm, dy: offset + 141mm, box(width: 257mm, align(center, where)))
+  } else {
+    place(top + left, dx: 20mm, dy: offset + 32mm, box(width: 257mm, align(center,
+      fit(text(weight: "extrabold", fill: color, upper(f.titulo)), 257mm, 96pt))))
+    place(top + left, dx: 20mm, dy: offset + 66mm, box(width: 257mm, align(center, where)))
+  }
   if is_arbiter(p) {
     place(top + left, dx: 23.5mm, dy: offset + 92mm, box(width: 250mm, height: 56mm, stroke: 1.4mm + color, radius: 5mm,
       align(center + horizon, stack(spacing: 8mm,

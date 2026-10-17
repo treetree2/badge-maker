@@ -37,11 +37,16 @@
     if local not in cfg.locais {
       panic("local desconhecido \"" + local + "\" para " + nome + " (locais: " + cfg.locais.keys().join(", ") + ")")
     }
+    let mesa = upper(r.at(col.mesa, default: ""))
+    let mesas = cfg.salas.at(local, default: (:)).at("mesas", default: (:))
+    if mesa != "" and mesa not in mesas {
+      panic("mesa \"" + mesa + "\" para " + nome + " (mesas em " + local + ": " + mesas.keys().join(", ") + ")")
+    }
     let problemas = r.at(col.problemas, default: "")
     if problemas not in ("", "1", "2", "3") {
       panic("problemas \"" + problemas + "\" para " + nome + " (tem de ser 1, 2 ou 3)")
     }
-    out.push((nome: nome, funcao: role_key(r.at(col.funcao), nome), local: local, mesa: r.at(col.mesa, default: ""), problemas: problemas))
+    out.push((nome: nome, funcao: role_key(r.at(col.funcao), nome), local: local, mesa: mesa, problemas: problemas))
   }
   // Two árbitros of one table can't share the same problems
   let seen = (:)
@@ -68,8 +73,15 @@
   (words.first(), if words.len() > 1 { words.last() } else { "" })
 }
 
-// "Salão Nobre · Mesa 3", or just the venue without a table
+// "Salão Nobre · Mesa A", or just the venue without a table
 #let place_text(p) = cfg.locais.at(p.local) + if p.mesa != "" { " · Mesa " + p.mesa } else { "" }
+
+// Colour means jury table: (cor, texto) of a person's or team's table, sem_mesa for people without one
+#let table_style(x) = if x.mesa == "" { cfg.sem_mesa } else { cfg.salas.at(x.local).mesas.at(x.mesa) }
+#let table_color(x) = rgb(table_style(x).cor)
+#let table_text(x) = rgb(table_style(x).texto)
+// Badge background of a person's table: "tic-a", or "sem-mesa"
+#let table_key(p) = if p.mesa == "" { "sem-mesa" } else { lower(p.local + "-" + p.mesa) }
 
 // Teams (input/equipas.csv), checked against the rooms in conteudo.yaml
 #let tcol = cfg.colunas_equipas
@@ -112,6 +124,10 @@
     if "categoria" in sala and sala.categoria != categoria {
       panic(who + " é " + cfg.categorias.at(categoria).titulo + " mas a sala " + local + " é " + cfg.categorias.at(sala.categoria).titulo)
     }
+    let mesa = upper(r.at(tcol.mesa, default: ""))
+    if mesa not in sala.at("mesas", default: (:)) {
+      panic("mesa \"" + mesa + "\" para " + who + " (mesas em " + local + ": " + sala.at("mesas", default: (:)).keys().join(", ") + ")")
+    }
     let classificacao = r.at(tcol.classificacao, default: "")
     if classificacao not in ("", "1", "2", "3") { panic("classificação \"" + classificacao + "\" para " + who + " (tem de ser 1, 2, 3 ou vazia)") }
     let spot = local + " " + fila + "×" + coluna
@@ -123,6 +139,7 @@
       equipa: upper(r.at(tcol.equipa, default: "")),
       categoria: categoria,
       local: local,
+      mesa: mesa,
       fila: int(fila),
       coluna: int(coluna),
       alunos: tcol.alunos.map(c => r.at(c, default: "")).filter(n => n != ""),
@@ -153,19 +170,31 @@
 ))
 #let category(t) = cfg.categorias.at(t.categoria).titulo
 
-// Short school names for stickers and team sheets ("Escola Secundária Pedro Nunes" → "ES Pedro Nunes"), with the
-// usual Portuguese abbreviations; certificates keep the official name
+// Kinds of school and their usual Portuguese abbreviations, longest first
+#let school_kinds = (
+  ("Agrupamento de Escolas", "AE"),
+  ("Escola Básica e Secundária", "EBS"),
+  ("Escola Secundária", "ES"),
+  ("Escola Básica", "EB"),
+  ("Escola Profissional", "EP"),
+)
+
+// Short school names for team sheets and envelope labels ("Escola Secundária Pedro Nunes" → "ES Pedro Nunes");
+// certificates and stickers keep the full name
 #let school_short(name) = {
-  for (long, short) in (
-    ("Agrupamento de Escolas", "AE"),
-    ("Escola Básica e Secundária", "EBS"),
-    ("Escola Secundária", "ES"),
-    ("Escola Básica", "EB"),
-    ("Escola Profissional", "EP"),
-  ) {
+  for (long, short) in school_kinds {
     if name.starts-with(long + " ") { return short + name.slice(long.len()) }
   }
   name
+}
+
+// The full name split after its kind, where a line break reads naturally:
+// ("Escola Secundária", "Pedro Nunes"), or (none, name) for a school with no known kind
+#let school_split(name) = {
+  for (long, short) in school_kinds {
+    if name.starts-with(long + " ") { return (long, name.slice(long.len() + 1)) }
+  }
+  (none, name)
 }
 
 // A4 label sheets, measured in conteudo.yaml (mm): each item drawn by draw(item) in its label, in reading order

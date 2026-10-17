@@ -15,55 +15,50 @@ locais:
   TIC: TIC
   SN: Salão Nobre
 
-# Roles in the order they appear in the PDF. The key is the background (background/<key>.pdf).
+# Roles, in the order they appear on the table sheets (mesas.pdf) and within each table on the badges.
 # nomes: how the role may be written in the list (case and accents are ignored).
-# Colours as in the design (outer.html). antes / durante / depois are optional.
+# subtitulo (optional) goes under the role on the front of the badge. antes / durante / depois are optional.
 funcoes:
   coordinator:
     titulo: Coordenação
     nomes: [Coordenação, Coordenador, Coordenadora, Coordinator]
-    cor: "#15152a"
-    texto: "#ffffff"
     antes: Apagar fogos!
     durante: Apagar fogos!
     depois: Apagar fogos!
   staff:
     titulo: Staff
     nomes: [Staff]
-    cor: "#009de0"
-    texto: "#ffffff"
   operador:
     titulo: Operador
     nomes: [Operador, Operadora]
-    cor: "#0f9d6e"
-    texto: "#ffffff"
     antes: Efetuar o check-in das equipas. Testar o leitor de códigos e garantir acesso ao sistema.
     durante: Registar rapidamente os problemas resolvidos no sistema e organizar as folhas.
     depois: Fazer a verificação final («room review») e corrigir registos em falta.
   permutador:
     titulo: Permutador
     nomes: [Permutador, Permutadora]
-    cor: "#f9835f"
-    texto: "#15152a"
     antes: Conhecer o circuito das folhas (equipas → corretores → permutadores → operadores). Organizar os enunciados das equipas da tua mesa. Distribuir os envelopes com os enunciados iniciais quando anunciado.
     durante: Trocar problemas resolvidos por novos, organizar filas e evitar trocas ou perdas.
     depois: Ajudar os operadores na verificação final das folhas entregues.
   verificador:
     titulo: Verificador
+    subtitulo: Corretor
     nomes: [Verificador, Verificadora]
-    cor: "#7048c8"
-    texto: "#ffffff"
     antes: Conhecer o formato das respostas e quando pedir simplificação ou chamar o árbitro. Ajudar os operadores no check-in e levar cada equipa à sua mesa.
     durante: Verificar rapidamente os resultados, marcar correto / incorreto / incompleto e não dar pistas.
     depois: Apoio logístico, encaminhar os alunos para a cantina e ajudar a arrumar a sala.
   arbitro:
     titulo: Árbitro
+    subtitulo: Corretor
     nomes: [Árbitro, Árbitra]
-    cor: "#c8203c"
-    texto: "#ffffff"
     antes: Ler os enunciados e as soluções dos problemas atribuídos.
     durante: Apoiar os verificadores e discutir soluções com as equipas quando necessário.
     depois: Apoio logístico, encaminhar os alunos para a cantina e ajudar a arrumar a sala.
+
+# Blank badges for people who show up on the day: role key → how many. No name (written by hand) and no venue.
+badges_em_branco:
+  staff: 4
+  coordinator: 2
 
 # Schedule on the inside of every card. The split by venue (morning in both, afternoon in TIC) is last year's; confirm.
 programa:
@@ -89,6 +84,7 @@ colunas_equipas:
   equipa: equipa        # A, B, … for schools with more than one team; empty otherwise
   categoria: categoria
   local: local
+  mesa: mesa            # jury table that corrects this team's answers: a key of mesas in its room (salas below)
   fila: fila            # row number, 1 nearest the screen (ecrã)
   coluna: coluna        # column number, 1 on the left as seen from the back
   alunos: [aluno1, aluno2, aluno3, aluno4, aluno5]   # one column per student; empty cells are skipped
@@ -107,16 +103,31 @@ categorias:
     cor: "#15152a"
     prefixo: S
 
-# Grid of team tables in each room, and the category it holds
+# Grid of team tables in each room, the category it holds and its jury tables.
+# Colour means jury table everywhere: badges, table sheets, team sheets, envelope labels and the map.
+# Each jury table has its own badge background, background/<sala>-<mesa>.pdf (lower case, e.g. tic-a.pdf), made in
+# t2-design (campaigns/2026-11-13-naboj-fisica/badges, TABLES in outer.html); keep the colours in step with it.
+# texto: colour of the text on the table's colour.
 salas:
   TIC:
     filas: 6
     colunas: 10
     categoria: senior
+    mesas:
+      A: { cor: "#009de0", texto: "#ffffff" }
+      B: { cor: "#0f9d6e", texto: "#ffffff" }
+      C: { cor: "#7048c8", texto: "#ffffff" }
+      D: { cor: "#c8203c", texto: "#ffffff" }
   SN:
-    filas: 6
+    filas: 3
     colunas: 10
     categoria: junior
+    mesas:
+      A: { cor: "#ef6c1f", texto: "#ffffff" }
+      B: { cor: "#0a8f8f", texto: "#ffffff" }
+
+# People without a jury table (coordination, staff): badge background/sem-mesa.pdf
+sem_mesa: { cor: "#15152a", texto: "#ffffff" }
 
 # Certificates (certificados.pdf: students and teachers; premios.pdf: winners)
 certificados:

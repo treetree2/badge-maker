@@ -1,2 +1,5 @@
 # Dependency lists written by typst (see typst_deps in the Makefile)
 .deps/
+
+# Built from the simulated lists until the real ones arrive; run make to get them
+events/2026-11-13-naboj-fisica/output/

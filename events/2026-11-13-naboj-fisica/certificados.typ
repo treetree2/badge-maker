@@ -15,10 +15,10 @@
   let schools = accompanied.map(t => t.escola).dedup()
   let lead = [acompanhou, na qualidade de docente,]
   if schools.len() == 1 {
-    certificate(accent: navy, content([Certificado de participação], name,
+    certificate(accent: navy, content(name,
       [#lead #label(accompanied) #of_school(schools.first())], schools.first()))
   } else {
-    certificate(accent: navy, content([Certificado de participação], name, lead,
+    certificate(accent: navy, content(name, lead,
       and_list(schools.map(s => label(accompanied.filter(t => t.escola == s)) + " " + of_school(s) + " " + s))))
   }
 }
@@ -26,7 +26,7 @@
 #for envelope in envelopes {
   for t in envelope.equipas {
     for aluno in t.alunos {
-      certificate(content([Certificado de participação], aluno,
+      certificate(content(aluno,
         [participou como membro da #team(t) #of_school(t.escola)], t.escola))
     }
   }
