@@ -1,0 +1,168 @@
+# Texts of the Náboj de Física 2026 badges (inside of the card) and table papers.
+# Edit freely and run `make EVENT=events/2026-11-13-naboj-fisica` again.
+
+# Columns of input/pessoas.csv
+colunas:
+  nome: nome
+  funcao: funcao
+  local: local
+  mesa: mesa
+  # árbitros only: 1, 2 or 3. Árbitro n corrects the problems whose number leaves remainder n mod 3 (3 → 3, 6, 9, …)
+  problemas: problemas
+
+# Venue codes used in the list → name shown on the cards
+locais:
+  TIC: TIC
+  SN: Salão Nobre
+
+# Roles, in the order they appear on the table sheets (mesas.pdf) and within each table on the badges.
+# nomes: how the role may be written in the list (case and accents are ignored).
+# subtitulo (optional) goes under the role on the front of the badge. antes / durante / depois are optional.
+funcoes:
+  coordinator:
+    titulo: Coordenação
+    nomes: [Coordenação, Coordenador, Coordenadora, Coordinator]
+    antes: Apagar fogos!
+    durante: Apagar fogos!
+    depois: Apagar fogos!
+  staff:
+    titulo: Staff
+    nomes: [Staff]
+  operador:
+    titulo: Operador
+    nomes: [Operador, Operadora]
+    antes: Efetuar o check-in das equipas. Testar o leitor de códigos e garantir acesso ao sistema.
+    durante: Registar rapidamente os problemas resolvidos no sistema e organizar as folhas.
+    depois: Fazer a verificação final («room review») e corrigir registos em falta.
+  permutador:
+    titulo: Permutador
+    nomes: [Permutador, Permutadora]
+    antes: Conhecer o circuito das folhas (equipas → corretores → permutadores → operadores). Organizar os enunciados das equipas da tua mesa. Distribuir os envelopes com os enunciados iniciais quando anunciado.
+    durante: Trocar problemas resolvidos por novos, organizar filas e evitar trocas ou perdas.
+    depois: Ajudar os operadores na verificação final das folhas entregues.
+  verificador:
+    titulo: Verificador
+    subtitulo: Corretor
+    nomes: [Verificador, Verificadora]
+    antes: Conhecer o formato das respostas e quando pedir simplificação ou chamar o árbitro. Ajudar os operadores no check-in e levar cada equipa à sua mesa.
+    durante: Verificar rapidamente os resultados, marcar correto / incorreto / incompleto e não dar pistas.
+    depois: Apoio logístico, encaminhar os alunos para a cantina e ajudar a arrumar a sala.
+  arbitro:
+    titulo: Árbitro
+    subtitulo: Corretor
+    nomes: [Árbitro, Árbitra]
+    antes: Ler os enunciados e as soluções dos problemas atribuídos.
+    durante: Apoiar os verificadores e discutir soluções com as equipas quando necessário.
+    depois: Apoio logístico, encaminhar os alunos para a cantina e ajudar a arrumar a sala.
+
+# Blank badges for people who show up on the day: role key → how many. No name (written by hand) and no venue.
+badges_em_branco:
+  staff: 4
+  coordinator: 2
+
+# Schedule on the inside of every card. The split by venue (morning in both, afternoon in TIC) is last year's; confirm.
+programa:
+  - local: TIC e Salão Nobre
+    itens:
+      - ["08:00", "Chegada do staff"]
+      - ["09:00", "Início da receção dos alunos"]
+      - ["10:00", "Cerimónia de abertura e regras"]
+      - ["10:30 – 12:30", "Competição"]
+      - ["12:30 – 14:00", "Almoço"]
+  - local: TIC
+    itens:
+      - ["14:30 – 15:30", "Palestra pelo Prof. Marco Piccardo"]
+      - ["15:30 – 15:45", "Apresentação dos cursos de Física"]
+      - ["15:45 – 16:00", "Apresentação do NFIST"]
+      - ["16:00 – 16:30", "Entrega dos prémios"]
+      - ["16:30 – 16:45", "Encerramento"]
+
+# Teams (input/equipas.csv): one A6 sheet per team (two copies: table + team) and a map per room
+colunas_equipas:
+  numero: numero        # team code, e.g. J000 (Júnior) or S000 (Sénior)
+  escola: escola
+  equipa: equipa        # A, B, … for schools with more than one team; empty otherwise
+  categoria: categoria
+  local: local
+  mesa: mesa            # jury table that corrects this team's answers: a key of mesas in its room (salas below)
+  fila: fila            # row number, 1 nearest the screen (ecrã)
+  coluna: coluna        # column number, 1 on the left as seen from the back
+  alunos: [aluno1, aluno2, aluno3, aluno4, aluno5]   # one column per student; empty cells are skipped
+  professor: professor  # accompanying teacher; one certificate per teacher, even with two teams
+  classificacao: classificacao   # 1, 2 or 3 for the winners of each category; empty otherwise
+
+categorias:
+  junior:
+    titulo: Júnior
+    nomes: [Júnior, Junior, Jr]
+    cor: "#009de0"
+    prefixo: J          # team codes of this category start with this
+  senior:
+    titulo: Sénior
+    nomes: [Sénior, Senior, Sr]
+    cor: "#15152a"
+    prefixo: S
+
+# Grid of team tables in each room, the category it holds and its jury tables.
+# Colour means jury table everywhere: badges, table sheets, team sheets, envelope labels and the map.
+# Each jury table has its own badge background, background/<sala>-<mesa>.pdf (lower case, e.g. tic-a.pdf), made in
+# t2-design (campaigns/2026-11-13-naboj-fisica/badges, TABLES in outer.html); keep the colours in step with it.
+# texto: colour of the text on the table's colour.
+salas:
+  TIC:
+    filas: 6
+    colunas: 10
+    categoria: senior
+    mesas:
+      A: { cor: "#009de0", texto: "#ffffff" }
+      B: { cor: "#0f9d6e", texto: "#ffffff" }
+      C: { cor: "#7048c8", texto: "#ffffff" }
+      D: { cor: "#c8203c", texto: "#ffffff" }
+  SN:
+    filas: 3
+    colunas: 10
+    categoria: junior
+    mesas:
+      A: { cor: "#ef6c1f", texto: "#ffffff" }
+      B: { cor: "#0a8f8f", texto: "#ffffff" }
+
+# People without a jury table (coordination, staff): badge background/sem-mesa.pdf
+sem_mesa: { cor: "#15152a", texto: "#ffffff" }
+
+# Certificates (certificados.pdf: students and teachers; premios.pdf: winners)
+certificados:
+  evento: Náboj de Física 2026
+  data: 13 de novembro
+  local: Instituto Superior Técnico, em Lisboa
+  # Signature lines at the bottom; leave nome empty for a blank line to sign by hand
+  assinaturas:
+    - nome: ""
+      cargo: Coordenação do Náboj de Física
+    - nome: ""
+      cargo: Departamento de Física, Técnico
+
+# Envelope stickers (etiquetas.pdf): one per school. Label sheet: Avery L7165 and compatible
+# (A4, 2 × 4 labels of 99.1 × 67.7 mm). For another sheet, copy its measurements here (mm).
+etiquetas:
+  colunas: 2
+  linhas: 4
+  largura: 99.1
+  altura: 67.7
+  margem_esquerda: 4.65
+  margem_topo: 13.1
+  passo_horizontal: 101.6   # from the left edge of one label to the left edge of the next
+  passo_vertical: 67.7
+  contorno: false           # true draws each label's outline, to check the alignment on plain paper
+
+# Labels for the small envelopes with each team's starting problems (enunciados.pdf): one per team, in the
+# order of equipas.pdf. Label sheet: Avery L7160 and compatible (A4, 3 × 7 labels of 63.5 × 38.1 mm).
+etiquetas_enunciados:
+  colunas: 3
+  linhas: 7
+  largura: 63.5
+  altura: 38.1
+  margem_esquerda: 7.25
+  margem_topo: 15.15
+  passo_horizontal: 66.04
+  passo_vertical: 38.1
+  contorno: false
