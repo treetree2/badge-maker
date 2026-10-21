@@ -122,9 +122,18 @@
 }).flatten()
 #let ordered = (people + blanks).sorted(key: p => table_index(p) + (if p.nome == "" { "1" } else { "0" }) + role_index(p) + p.nome)
 
+// Badge design, from design_badges in conteudo.yaml or --input design_badges=…; the backgrounds are made in t2-design
+// (badges/outer.html and inner.html, ?design=): grelha is background/<table>.pdf, the others
+// background/<table>-<design>.pdf; sem-caixa (grelha without the white name box) shares grelha's inside
+#let badge_designs = ("grelha", "sem-caixa", "campo", "lateral", "trajetoria")
+#let badge_design = sys.inputs.at("design_badges", default: cfg.at("design_badges", default: "grelha"))
+#if badge_design not in badge_designs { panic("design_badges desconhecido \"" + badge_design + "\" (designs: " + badge_designs.join(", ") + ")") }
+#let front_background(key, design) = "background/" + key + (if design == "grelha" { "" } else { "-" + design }) + ".pdf"
+#let back_background(key, design) = "background/" + key + (if design in ("grelha", "sem-caixa") { "" } else { "-" + design }) + "-back.pdf"
+
 #for key in ordered.map(table_key).dedup() {
   for pair in ordered.filter(p => table_key(p) == key).chunks(2) {
-    page(background: image("background/" + key + ".pdf"), front(pair))
-    page(background: image("background/" + key + "-back.pdf"), inside(pair))
+    page(background: image(front_background(key, badge_design)), front(pair))
+    page(background: image(back_background(key, badge_design)), inside(pair))
   }
 }

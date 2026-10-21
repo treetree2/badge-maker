@@ -55,6 +55,10 @@ funcoes:
     durante: Apoiar os verificadores e discutir soluções com as equipas quando necessário.
     depois: Apoio logístico, encaminhar os alunos para a cantina e ajudar a arrumar a sala.
 
+# Badge design (backgrounds from t2-design): grelha, sem-caixa (grelha without the white name box), campo, lateral or
+# trajetoria, matching the certificate designs. output/exemplos.pdf has one of each.
+design_badges: grelha
+
 # Blank badges for people who show up on the day: role key → how many. No name (written by hand) and no venue.
 badges_em_branco:
   staff: 4
@@ -72,10 +76,10 @@ programa:
   - local: TIC
     itens:
       - ["14:30 – 15:30", "Palestra pelo Prof. Marco Piccardo"]
-      - ["15:30 – 15:45", "Apresentação dos cursos de Física"]
-      - ["15:45 – 16:00", "Apresentação do NFIST"]
-      - ["16:00 – 16:30", "Entrega dos prémios"]
-      - ["16:30 – 16:45", "Encerramento"]
+      - ["15:30 – 15:40", "Prof. Jorge Vieira (DF)"]
+      - ["15:40 – 15:50", "Apresentação do NFIST"]
+      - ["15:50 – 16:00", "Apresentação da EAF"]
+      - ["16:00 – 16:30", "Divulgação dos resultados e entrega dos prémios"]
 
 # Teams (input/equipas.csv): one A6 sheet per team (two copies: table + team) and a map per room
 colunas_equipas:
@@ -131,6 +135,9 @@ sem_mesa: { cor: "#15152a", texto: "#ffffff" }
 
 # Certificates (certificados.pdf: students and teachers; premios.pdf: winners)
 certificados:
+  # grelha (graph paper, as the badges), campo (framed, field lines), lateral (colour band on the left) or trajetoria
+  # (a parabola over the text). output/amostras.pdf has one of each kind in every design. Or: --input design=…
+  design: grelha
   evento: Náboj de Física 2026
   data: 13 de novembro
   local: Instituto Superior Técnico, em Lisboa
