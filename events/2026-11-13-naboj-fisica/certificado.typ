@@ -120,27 +120,24 @@
   place(top + left, dy: 180.5mm, box(width: 100%, height: 12mm, align(center + horizon, logos(scale: 0.8, gutter: 16mm))))
 }
 
-// The lockup in a full-height band of the accent colour; the text left-aligned on the rest of the page
+// The lockup in a full-height band of the accent colour; on the rest of the page the text and the logos, flush left.
+// No signature line
 #let lateral(accent, ink, kind, body) = {
-  let side = 82mm
-  let x = side + 22mm
+  let side = 64mm
+  let x = side + 18mm
+  let column = 297mm - x - 20mm
   place(rect(width: 100%, height: 100%, fill: white, stroke: none))
   place(top + left, box(width: side, band(210mm, accent, ink)))
   place(top + left, dx: side, rect(width: 1.4mm, height: 100%, fill: navy.transparentize(if accent == navy { 100% } else { 0% })))
-  place(top + left, dx: 15mm, dy: 22mm, tinted("assets/naboj-physics.svg", ink, width: side - 30mm))
-  place(bottom + left, dx: 15mm, dy: -24mm, {
-    date_lockup(date: ink, label: ink, size: 40pt, label_size: 9.5pt)
-    v(9mm)
-    set text(size: 9pt, weight: "medium", fill: ink.transparentize(18%), top-edge: "cap-height", bottom-edge: "baseline")
-    set par(leading: 0.7em)
-    block(width: side - 30mm, cert.local.replace(", em ", ", "))
+  place(top + left, dx: 12mm, dy: 22mm, tinted("assets/naboj-physics.svg", ink, width: side - 24mm))
+  place(bottom + left, dx: 12mm, dy: -24mm, {
+    date_lockup(date: ink, label: ink, size: 32pt, label_size: 9.5pt)
   })
 
   place(top + left, dx: x, dy: 26mm, kicker(kind, accent))
-  place(top + left, dx: x, dy: 40mm, box(width: 297mm - x - 20mm, height: 114mm, align(left + horizon, body)))
-  place(top + left, dx: x - 3mm, dy: 162mm, signatures(gap: 14mm))
-  place(top + left, dx: x, dy: 181mm, line(length: 297mm - x - 20mm, stroke: 0.3mm + rgb("#d7e0ec")))
-  place(top + left, dx: x, dy: 184.5mm, box(height: 14mm, align(horizon, logos(scale: 0.85, gutter: 14mm))))
+  place(top + left, dx: x, dy: 36mm, box(width: column, height: 136mm, align(left + horizon, body)))
+  place(top + left, dx: x, dy: 181mm, line(length: column, stroke: 0.3mm + rgb("#d7e0ec")))
+  place(top + left, dx: x, dy: 188mm, box(width: column, height: 14mm, align(left + horizon, logos(scale: 0.85, gutter: 18mm))))
 }
 
 // An arrow from (x, y) by (dx, dy), in mm
@@ -200,9 +197,41 @@
   (grelha: grelha, campo: campo, lateral: lateral, trajetoria: trajetoria).at(design)(accent, ink, kind, body)
 })
 
+// No line breaks inside "2.ª edição", "1.º lugar", "três equipas" or "13 de novembro de 2026": non-breaking spaces
+// after a number (or a number word) and around the "de" of a date
+#let months = "janeiro|fevereiro|março|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro"
+#let glue(s) = {
+  s
+    .replace(regex("(\\d+(\\.[ºª])?|uma|duas|três|quatro|cinco|seis|sete|oito|nove) "), m => m.captures.first() + "\u{a0}")
+    .replace(regex("[ \u{a0}]de (" + months + "|\\d{4})"), m => "\u{a0}de\u{a0}" + m.captures.first())
+}
+
+// The students' and teachers' certificates on the lateral design: "Certificamos que", the name and one sentence
+// (statement), then where and when it was signed; the winners' have their place on top. Two sizes: 22pt for the
+// place and the name, 14pt for the rest.
+#let lateral_statement(name, statement, highlight: none) = {
+  set text(size: 14pt, top-edge: "cap-height", bottom-edge: "baseline")
+  set par(leading: 0.85em, justify: false)
+  if highlight != none { highlight; v(8mm) }
+  text(weight: "medium")[Certificamos que]
+  v(8mm)
+  layout(room => {
+    let size = calc.min(22pt, 22pt * (room.width * 1.8 / measure(text(size: 22pt, weight: "extrabold", name)).width))
+    block(width: 100%, { set par(leading: 0.45em); text(size: size, weight: "extrabold", name) })
+  })
+  v(9mm)
+  block({ set par(justify: true); set text(hyphenate: false); statement })
+  v(7mm)
+  glue(cert.assinado)
+}
+
+// "na 2.ª edição … — organizada … — que teve lugar na sexta-feira, …, no Instituto Superior Técnico, em Lisboa"
+#let lateral_event = [na #glue(cert.edicao) — #cert.organizacao — que teve lugar #glue(cert.quando), no #cert.local]
+
 // The parts every certificate shares: an optional highlight (the place, on premios.pdf), "Certifica-se que", the
 // name, then three lines: the sentence up to the school ("… da equipa Júnior do"), the school alone (never split),
-// and the event, when and where. Fills the width it is given; long names shrink to fit it.
+// and the event, when and where. Fills the width it is given; long names shrink to fit it. Not on the lateral design,
+// which has its own (lateral_statement).
 #let content(name, lead, school, highlight: none) = {
   set text(top-edge: "cap-height", bottom-edge: "baseline")
   if highlight != none { highlight; v(12mm) }
@@ -231,8 +260,13 @@
 
 // The certificates themselves, one page each
 
-#let student_certificate(aluno, t, design: default_design) = certificate(design: design, content(aluno,
-  [participou como membro da #team(t) #of_school(t.escola)], t.escola))
+#let student_certificate(aluno, t, design: default_design) = if design == "lateral" {
+  certificate(design: design, lateral_statement(aluno, [participou, em representação #of_school(t.escola) *#t.escola*,
+    #lateral_event, tendo competido no Escalão~#category(t), pelo que lhe é atribuído o presente *CERTIFICADO*.]))
+} else {
+  certificate(design: design, content(aluno,
+    [participou como membro da #team(t) #of_school(t.escola)], t.escola))
+}
 
 #let teacher_certificate(name, design: default_design) = {
   let accompanied = teachers.at(name)
@@ -246,7 +280,16 @@
   }
   let schools = accompanied.map(t => t.escola).dedup()
   let lead = [acompanhou, na qualidade de docente,]
-  if schools.len() == 1 {
+  if design == "lateral" {
+    // "uma equipa participante", "duas equipas participantes"…; several schools: "da Escola X e do Colégio Y"
+    let n = accompanied.len()
+    let teams_text = if n == 1 { "uma equipa participante" } else {
+      ("duas", "três", "quatro", "cinco", "seis", "sete", "oito", "nove").at(n - 2, default: str(n)) + " equipas participantes"
+    }
+    certificate(accent: navy, design: design, lateral_statement(name, [acompanhou, em representação
+      #and_list(schools.map(s => [#of_school(s) *#s*])), #glue(teams_text) #lateral_event, pelo que lhe é atribuído o
+      presente *CERTIFICADO*.]))
+  } else if schools.len() == 1 {
     certificate(accent: navy, design: design, content(name,
       [#lead #label(accompanied) #of_school(schools.first())], schools.first()))
   } else {
@@ -266,7 +309,14 @@
 #let winner_certificate(aluno, t, design: default_design) = {
   let (medal, ink) = medals.at(t.classificacao)
   let place_text = t.classificacao + ".º lugar"
-  certificate(accent: medal, ink: ink, kind: "mérito", design: design, content(aluno,
-    highlight: text(size: 34pt, weight: "extrabold", fill: medal)[#place_text · #category(t)],
-    [obteve o #place_text em Portugal na categoria #category(t) como membro da #team(t, with_category: false) #of_school(t.escola)], t.escola))
+  if design == "lateral" {
+    certificate(accent: medal, ink: ink, kind: "mérito", design: design, lateral_statement(aluno,
+      highlight: text(size: 22pt, weight: "extrabold", fill: medal)[#place_text · #category(t)],
+      [participou, em representação #of_school(t.escola) *#t.escola*, #lateral_event, tendo obtido o *#glue(place_text) em
+      Portugal no Escalão~#category(t)*, pelo que lhe é atribuído o presente *CERTIFICADO*.]))
+  } else {
+    certificate(accent: medal, ink: ink, kind: "mérito", design: design, content(aluno,
+      highlight: text(size: 34pt, weight: "extrabold", fill: medal)[#place_text · #category(t)],
+      [obteve o #place_text em Portugal na categoria #category(t) como membro da #team(t, with_category: false) #of_school(t.escola)], t.escola))
+  }
 }

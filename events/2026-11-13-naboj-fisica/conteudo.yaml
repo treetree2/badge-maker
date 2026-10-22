@@ -57,7 +57,7 @@ funcoes:
 
 # Badge design (backgrounds from t2-design): grelha, sem-caixa (grelha without the white name box), campo, lateral or
 # trajetoria, matching the certificate designs. output/exemplos.pdf has one of each.
-design_badges: grelha
+design_badges: sem-caixa
 
 # Blank badges for people who show up on the day: role key → how many. No name (written by hand) and no venue.
 badges_em_branco:
@@ -137,11 +137,17 @@ sem_mesa: { cor: "#15152a", texto: "#ffffff" }
 certificados:
   # grelha (graph paper, as the badges), campo (framed, field lines), lateral (colour band on the left) or trajetoria
   # (a parabola over the text). output/amostras.pdf has one of each kind in every design. Or: --input design=…
-  design: grelha
+  design: lateral
   evento: Náboj de Física 2026
   data: 13 de novembro
   local: Instituto Superior Técnico, em Lisboa
-  # Signature lines at the bottom; leave nome empty for a blank line to sign by hand
+  # The sentence of every certificate on the lateral design (students, teachers, winners): "… na <edicao> —
+  # <organizacao> — que teve lugar <quando>, no <local>, …", then the place and date (<assinado>) under it
+  edicao: 2.ª edição portuguesa do Náboj de Física
+  organizacao: organizada em Portugal pela TreeTree2, com o apoio e a colaboração do Departamento de Física do Instituto Superior Técnico e em parceria com a Trojsten
+  quando: na sexta-feira, dia 13 de novembro de 2026
+  assinado: Lisboa, 13 de novembro de 2026.
+  # Signature lines at the bottom (not on the lateral design); leave nome empty for a blank line to sign by hand
   assinaturas:
     - nome: ""
       cargo: Coordenação do Náboj de Física
